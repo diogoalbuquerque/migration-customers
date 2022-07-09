@@ -1,0 +1,44 @@
+name: Generate Artifact
+on:
+  workflow_dispatch:
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set go version
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: Install dependency
+        run: go install github.com/ibmdb/go_ibm_db/installer@v0.4.1
+      - name: Install clidriver
+        run: |
+          cd /home/runner/go/pkg/mod/github.com/ibmdb/go_ibm_db@v0.4.1/installer
+          go run setup.go
+      - name: Go test
+        run: make test
+        env:
+          DB2HOME: "/home/runner/go/pkg/mod/github.com/ibmdb/clidriver"
+          CGO_CFLAGS: -I/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/include
+          CGO_LDFLAGS: -L/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/lib
+          LD_LIBRARY_PATH: "/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/lib"
+      - name: Generate artifact
+        run: make build
+        env:
+          DB2HOME: "/home/runner/go/pkg/mod/github.com/ibmdb/clidriver"
+          CGO_CFLAGS: -I/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/include
+          CGO_LDFLAGS: -L/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/lib
+          LD_LIBRARY_PATH: "/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/lib"
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: MIGRATION_CUSTOMERS
+          path: bin
+
+
+
+

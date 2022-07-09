@@ -1,0 +1,32 @@
+name: Build
+
+on: [ push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set Go version
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: Install IBM DB
+        run: go install github.com/ibmdb/go_ibm_db/installer@v0.4.1
+      - name: Install Clidriver
+        run: |
+          cd /home/runner/go/pkg/mod/github.com/ibmdb/go_ibm_db@v0.4.1/installer
+          go run setup.go
+      - name: Go Test
+        run: make test
+        env:
+          DB2HOME: "/home/runner/go/pkg/mod/github.com/ibmdb/clidriver"
+          CGO_CFLAGS: -I/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/include
+          CGO_LDFLAGS: -L/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/lib
+          LD_LIBRARY_PATH: "/home/runner/go/pkg/mod/github.com/ibmdb/clidriver/lib"
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
+
+
+
