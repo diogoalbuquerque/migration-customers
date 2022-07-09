@@ -1,5 +1,8 @@
 # ⚙️ migration-customers
 
+[![Build](https://github.com/diogoalbuquerque/migration-customers/actions/workflows/build.yml/badge.svg)](https://github.com/diogoalbuquerque/migration-customers/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/diogoalbuquerque/migration-customers/branch/main/graph/badge.svg?token=yvpL6uN67X)](https://codecov.io/gh/diogoalbuquerque/migration-customers)
+
 ## Project
 
 This project consists of a processing function for creating a list of released clients in a new database,
